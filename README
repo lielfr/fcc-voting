@@ -1,1 +1,19 @@
 This is my solution for FCC's voting challenge. For more information, please visit this page: https://www.freecodecamp.com/challenges/build-a-voting-app.
+
+In order to run this app, you should create a file called config.js with this structure:
+
+var config = {
+  auth: {
+    consumerKey: '',
+    consumerSecret: '',
+    callbackURL: ''
+  },
+  db: {
+    mongoURL: 'a'
+  },
+  session: {
+    secret: ''
+  }
+};
+
+module.exports = config;
