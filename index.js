@@ -33,9 +33,13 @@ app.use(express_session({
   saveUninitialized: false,
   store: new express_session_mongo({url: config.db.mongoURL})
 }));
-app.use(express.static(__dirname+'/public'));
+app.use(express.static(__dirname+'/static'));
 app.use(body_parser.urlencoded({extended: false}));
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.get('/', function(req, res) {
+  res.render('index');
+});
 
 app.listen(process.env.PORT | 8080);

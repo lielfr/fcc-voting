@@ -1,0 +1,12 @@
+.jumbotron {
+  background-color: #337ab7;
+  color: white;
+}
+
+.flex-center {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  float: none;
+}
