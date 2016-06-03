@@ -1,0 +1,12 @@
+{
+  "name": "fcc-voting",
+  "version": "1.0.0",
+  "description": "This is my solution for FCC's voting challenge. For more information, please visit this page: https://www.freecodecamp.com/challenges/build-a-voting-app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
