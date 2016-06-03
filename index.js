@@ -7,6 +7,7 @@ var pug = require('pug');
 var passport = require('passport');
 var passport_twitter = require('passport-twitter').Strategy;
 var mongodb = require('mongodb').MongoClient;
+var controller_dashboard = require('./controllers/dashboard');
 
 passport.use(new passport_twitter({
   consumerKey: config.auth.consumerKey,
@@ -37,9 +38,16 @@ app.use(express.static(__dirname+'/static'));
 app.use(body_parser.urlencoded({extended: false}));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use('/dashboard', controller_dashboard);
 
 app.get('/', function(req, res) {
   res.render('index');
 });
+app.get('/auth', passport.authenticate('twitter'));
+app.get('/auth/cb', passport.authenticate('twitter', {failureRedirect: '/'}),
+function(req, res) {
+  res.redirect('/dashboard');
+});
+
 
 app.listen(process.env.PORT | 8080);
