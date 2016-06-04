@@ -22,11 +22,12 @@ router.get('/', function(req, res) {
         if (result.insertedCount !== 1)
           console.log('Something is weird with '+req.user.id+'.');
         db.close();
-        res.end('Logged in. Type /dashboard/logout to sign out.');
+        res.redirect('/dashboard');
       });
     });
   } else {
-    res.end('Welcome, '+req.userObj.displayName+'.');
+    res.render('dashboard', {username: req.userObj.displayName});
+    res.end();
   }
 });
 

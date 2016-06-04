@@ -8,7 +8,6 @@ function authMiddleware(req, res, next) {
   }
   else {
     mongodb.connect(config.db.mongoURL, function(err, db) {
-      console.log('Connected to database.');
       if (err) return console.error(err);
 
       var profiles = db.collection('profiles');
