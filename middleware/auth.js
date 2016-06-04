@@ -2,7 +2,7 @@ var config = require('../config');
 var mongodb = require('mongodb').MongoClient;
 
 function authMiddleware(req, res, next) {
-  if (!req.session.uid) {
+  if (!req.session || !req.session.uid) {
     req.isAuthorized = false;
     next();
   }
