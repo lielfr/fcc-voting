@@ -7,8 +7,5 @@ html
   body
     div(class='jumbotron text-center')
       h1 Welcome, #{username}.
-      div(class='btn-group btn-group-lg', role='group', aria-label='Admin actions')
-        button(type='button', class='btn btn-default btn-success', id='btn-new')
-          | New Poll
-        button(type='button', class='btn btn-default btn-danger', id='btn-logout')
-          | Sign Out
+      block jumbotronExtras
+    block bodyExtras

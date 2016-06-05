@@ -1,0 +1,8 @@
+extends ./dashboard.pug
+
+block jumbotronExtras
+  div(class='btn-group btn-group-lg', role='group', aria-label='Admin actions')
+    a(role='button', class='btn btn-default btn-success', id='btn-new', href='/dashboard/new')
+      | New Poll
+    button(type='button', class='btn btn-default btn-danger', id='btn-logout')
+      | Sign Out

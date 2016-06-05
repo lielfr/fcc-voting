@@ -31,7 +31,7 @@ router.get('/', function(req, res) {
       });
     }
   } else {
-    res.render('dashboard', {username: req.userObj.displayName});
+    res.render('dashboard-home', {username: req.userObj.displayName});
     res.end();
   }
 });
@@ -49,6 +49,15 @@ router.get('/logout', function(req, res) {
         res.end('Logged out.');
       });
     });
+  }
+});
+
+router.get('/new', function(req, res) {
+  if (!req.isAuthorized)
+    res.end('Not logged in.');
+  else {
+    res.render('dashboard-new', {username: req.userObj.displayName});
+    res.end();
   }
 });
 

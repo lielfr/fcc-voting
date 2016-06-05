@@ -42,5 +42,7 @@ router.get('/view/:token', function(req, res) {
         });
       }
     });
+    db.close();
+    res.end();
   });
 });
