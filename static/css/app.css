@@ -10,3 +10,17 @@
   align-items: center;
   float: none;
 }
+
+.poll-answer {
+  margin-top: 0.5em;
+}
+
+.btn-submit {
+  margin-top: 0.5em;
+  width: 100vh;
+}
+
+.list-group .btn {
+  margin-left: 1em;
+  margin-right: 1em;
+}

@@ -1,20 +1,18 @@
-var utilities = function() {
-  this.randomChoice = function(arr) {
-    return arr[Math.floor(Math.random()*(arr.length - 1))];
-  };
-
-  this.randomAlphanum = function() {
-    var alphanums = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    alphanums = alphanums.split();
-    return this.randomChoice(alphanums);
-  }
-
-  this.randomAlphanums = function(length=6) {
-    var ret = '';
-    for (var i = 0; i < length; i++)
-      ret += this.randomAlphanum();
-    return ret;
-  }
+var utils = {};
+utils.randomChoice = function(arr) {
+  return arr[Math.floor(Math.random()*(arr.length - 1))];
 };
 
-module.exports = utilities;
+utils.randomAlphanum = function() {
+  var alphanums = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  alphanums = alphanums.split('');
+  return utils.randomChoice(alphanums);
+};
+
+utils.randomAlphanums = function(length=6) {
+  var ret = '';
+  for (var i = 0; i < length; i++)
+    ret += utils.randomAlphanum();
+  return ret;
+};
+module.exports = utils;
