@@ -8,15 +8,11 @@ block jumbotronExtras
       | Sign Out
 
 block bodyExtras
-  ul(class='list-group flex-center' id='polls-list')
+  ul(class='list-group' id='polls-list')
     each obj in polls
       - var delID = 'del-' + obj._id
       - var editID = 'edit-' + obj._id
       - var voteLink = '/polls/' + obj._id
       li(class='list-group-item')
-        button(class='btn btn-default btn-primary', type='button', id=editID)
-          | Edit
-        a(class='invisible-link', href=voteLink)
-          | #{obj.title}
-        button(class='btn btn-default btn-danger', type='button', id=delID)
-          | Delete
+          a(class='invisible-link text-xs-center center-block', href=voteLink)
+            | #{obj.title}

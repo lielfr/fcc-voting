@@ -1,6 +1,5 @@
-.jumbotron {
-  background-color: #337ab7;
-  color: white;
+.jumbotron, .navbar {
+  border-radius: 0;
 }
 
 .flex-center {
@@ -8,7 +7,10 @@
   align-content: center;
   justify-content: center;
   align-items: center;
-  float: none;
+}
+
+.flex-column {
+  flex-direction: column;
 }
 
 .poll-answer {
@@ -21,10 +23,19 @@
 }
 
 .list-group .btn {
-  margin-left: 1em;
-  margin-right: 1em;
+  margin-top: -0.25em;
 }
 
 .list-group input.list-group-item {
   width: 100%;
+}
+
+.clear-padding-sides {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.center-block {
+  margin-left: auto;
+  margin-right: auto;
 }

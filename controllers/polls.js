@@ -5,8 +5,7 @@ var auth_middleware = require('../middleware/auth');
 
 
 var router = express.Router();
-
-//router.use(auth_middleware);
+router.use(auth_middleware);
 
 router.get('/:token', function(req, res) {
   mongodb.connect(config.db.mongoURL, function(err, db) {
@@ -37,10 +36,30 @@ router.get('/:token', function(req, res) {
             var creator = userDocs[0];
             var possibleAnswers = answers.distinct('answer', {pollID: selectedPoll._id}, function(err, answers) {
               if (err) return console.error(err);
+              var navbarLinks = [
+                {isActive: false, linkURL: '/', linkText: 'Home'},
+                {isActive: true, linkText: 'Vote'}
+              ];
+              var loginText = 'Not logged in.';
+              if (req.isAuthorized) {
+                navbarLinks.push({
+                  isActive: false,
+                  linkURL: '/dashboard',
+                  linkText: 'Dashboard'
+                });
+                navbarLinks.push({
+                  isActive: false,
+                  linkURL: '/dashboard/logout',
+                  linkText: 'Sign Out'
+                });
+                loginText = 'Hello, '+req.userObj.displayName+'.';
+              }
               res.render('poll-view-vote', {
                 poll: selectedPoll,
                 author: creator,
-                answers: answers
+                answers: answers,
+                loginText: loginText,
+                navbarLinks: navbarLinks
               });
               db.close();
               res.end();

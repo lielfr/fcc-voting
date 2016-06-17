@@ -1,12 +1,14 @@
-| <!DOCTYPE html>
-html
-  head
-    include ./head-includes.pug
-    title Polls Made Easy
-  body
-    div(class='jumbotron text-center')
-      h1 Polls Made Easy
-    div(class='container flex-center')
+extends ./base.pug
+block head
+  title Polls Made Easy
+block body
+  div(class='jumbotron bg-primary text-xs-center')
+    h1 Polls Made Easy
+  div(class='container flex-center')
+    if isAuthorized
+      a(class='btn btn-success', href='/dashboard', role='button')
+        | Go to your dashboard
+    else
       a(class='btn btn-info', href='/auth', role='button')
         i(class='fa fa-twitter', aria-hidden='true')
         | &nbsp;Sign In using Twitter

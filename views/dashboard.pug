@@ -1,12 +1,10 @@
-| <!DOCTYPE html>
-html
-  head
-    include ./head-includes.pug
-    script(src='/js/dashboard_client.js')
-    block headExtras
-    title Polls Made Easy - Dashboard
-  body
-    div(class='jumbotron text-center')
-      h1 Welcome, #{username}.
-      block jumbotronExtras
-    block bodyExtras
+extends ./base.pug
+block head
+  script(src='/js/dashboard_client.js')
+  block headExtras
+  title Polls Made Easy - Dashboard
+block body
+  div(class='jumbotron bg-primary text-xs-center')
+    h1 Welcome.
+    block jumbotronExtras
+  block bodyExtras

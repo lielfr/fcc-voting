@@ -1,0 +1,12 @@
+nav(class='navbar navbar-dark bg-primary')
+  ul(class='nav navbar-nav')
+    li(class='navbar-brand') Polls Made Easy
+    each item in navbarLinks
+      if item.isActive
+        li(class='nav-item active')
+          a(class='nav-link', href='#') #{item.linkText}
+      else
+        li(class='nav-item')
+          a(class='nav-link', href=item.linkURL) #{item.linkText}
+    li(class='nav-item active pull-xs-right clear-padding-sides')
+      span(class='nav-link') #{loginText}

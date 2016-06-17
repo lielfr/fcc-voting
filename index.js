@@ -9,13 +9,14 @@ var passport_twitter = require('passport-twitter').Strategy;
 var mongodb = require('mongodb').MongoClient;
 var controller_dashboard = require('./controllers/dashboard');
 var controller_polls = require('./controllers/polls');
+var middleware_mongo = require('./middleware/mongo');
+var middleware_auth = require('./middleware/auth');
 
 passport.use(new passport_twitter({
   consumerKey: config.auth.consumerKey,
   consumerSecret: config.auth.consumerSecret,
   callbackURL: config.auth.callbackURL
 }, function(token, tokenSecret, profile, cb) {
-  // TODO: Add the user account to the database.
   return cb(null, profile);
 }));
 passport.serializeUser(function(user, cb) {
@@ -39,11 +40,17 @@ app.use(express.static(__dirname+'/static'));
 app.use(body_parser.urlencoded({extended: false}));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(middleware_mongo);
+app.use(middleware_auth);
 app.use('/dashboard', controller_dashboard);
 app.use('/polls', controller_polls);
 
 app.get('/', function(req, res) {
-  res.render('index');
+  res.render('index', {
+    loginText: req.welcomeString,
+    navbarLinks: [],
+    isAuthorized: req.isAuthorized
+  });
 });
 app.get('/auth', passport.authenticate('twitter'));
 app.get('/auth/cb', passport.authenticate('twitter', {failureRedirect: '/'}),
