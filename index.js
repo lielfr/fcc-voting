@@ -8,6 +8,7 @@ var passport = require('passport');
 var passport_twitter = require('passport-twitter').Strategy;
 var mongodb = require('mongodb').MongoClient;
 var controller_dashboard = require('./controllers/dashboard');
+var controller_polls = require('./controllers/polls');
 
 passport.use(new passport_twitter({
   consumerKey: config.auth.consumerKey,
@@ -39,6 +40,7 @@ app.use(body_parser.urlencoded({extended: false}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/dashboard', controller_dashboard);
+app.use('/polls', controller_polls);
 
 app.get('/', function(req, res) {
   res.render('index');

@@ -1,0 +1,13 @@
+extends ./poll-view-base.pug
+
+block headExtras
+  script(src='/js/poll_vote.js')
+
+block bodyExtras
+  form(id='poll-vote', method='post')
+    div(class='list-group', id='poll-answers-container')
+      each answer in answers
+        button(type='button', class='list-group-item') #{answer}
+      input(type='text', class='list-group-item', id='new-answer', name='new-answer', placeholder = 'Your answer here')
+    input(type='hidden', name='selected-answer', id='selected-answer' value='')
+    button(class='btn btn-default btn-primary btn-submit', type='submit') Vote

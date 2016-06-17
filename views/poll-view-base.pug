@@ -1,0 +1,13 @@
+| <!DOCTYPE html>
+html
+  head
+    include ./head-includes.pug
+    script(src='/js/dashboard_client.js')
+    block headExtras
+    title Polls Made Easy - Poll
+  body
+    div(class='jumbotron text-center')
+      h1 #{poll.title}
+      p By #{author.displayName}
+      block jumbotronExtras
+    block bodyExtras
