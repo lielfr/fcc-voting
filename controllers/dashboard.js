@@ -1,14 +1,8 @@
-var mongodb = require('mongodb').MongoClient;
 var express = require('express');
 var co = require('co');
-var config = require('../config');
 var utils = require('../utils');
 
 var router = express.Router();
-
-function onError(err) {
-  console.error(err.stack);
-}
 
 router.get('/', function(req, res) {
   if (!req.isAuthorized) {
@@ -29,7 +23,7 @@ router.get('/', function(req, res) {
 
         req.mongo.db.close();
         res.redirect('/dashboard');
-      }).catch(onError);
+      }).catch(utils.onError);
     }
   } else {
     co(function* () {
@@ -47,7 +41,7 @@ router.get('/', function(req, res) {
       });
       req.mongo.db.close();
       res.end();
-    }).catch(onError);
+    }).catch(utils.onError);
   }
 });
 
@@ -63,7 +57,7 @@ router.get('/logout', function(req, res) {
       console.log('logging out.');
       res.redirect('/');
       res.end();
-    }).catch(onError);
+    }).catch(utils.onError);
   }
 });
 
@@ -108,7 +102,7 @@ router.post('/new', function(req, res) {
       yield req.mongo.answers.insertMany(questions);
       req.mongo.db.close();
       res.redirect('/dashboard');
-    }).catch(onError);
+    }).catch(utils.onError);
   }
 });
 

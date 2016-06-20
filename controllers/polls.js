@@ -1,106 +1,93 @@
-var mongodb = require('mongodb').MongoClient;
 var express = require('express');
-var config = require('../config');
-var auth_middleware = require('../middleware/auth');
+var co = require('co');
+var utils = require('../utils');
 
 
 var router = express.Router();
-router.use(auth_middleware);
 
 router.get('/:token', function(req, res) {
-  mongodb.connect(config.db.mongoURL, function(err, db) {
-    if (err) return console.error(err);
-
-    var polls = db.collection('polls');
-    var profiles = db.collection('profiles');
-    var answers = db.collection('answers');
-
-    polls.find({_id: req.params.token}).toArray(function(err, pollDocs) {
-      if (err) return console.error(err);
-
-      if (pollDocs.length === 0) {
-        db.close();
-        res.end('No polls with token '+req.params.token+'.');
-      }
-      else if (pollDocs.length > 1) {
-        db.close();
-        res.end('Too many polls with token '+req.params.token+'.');
+  co (function* () {
+    var matchedPolls = yield req.mongo.polls.find({
+      _id: req.params.token
+    }).toArray();
+    if (matchedPolls.length !== 1) {
+      req.mongo.db.close();
+      res.end((matchedPolls.length === 0?'No poll was ':'Too many polls were ')
+               + 'found.');
+    } else {
+      var poll = matchedPolls[0];
+      var pollAuthor = yield req.mongo.profiles.find({
+        uid: poll.author
+      }).toArray();
+      if (pollAuthor.length !== 1) {
+        req.mongo.db.close();
+        res.end('Unexpected error occured.');
+        yield Promise.reject(new Error('Could not find user: '+poll.author));
       } else {
-        var selectedPoll = pollDocs[0];
-        profiles.find({uid: selectedPoll.author}).toArray(function(err, userDocs) {
-          if (userDocs.length !== 1) {
-            db.close();
-            res.end((userDocs.length === 0?'No':'Too many')+
-                    ' users were found with id '+selectedPoll.author+'.');
-           } else {
-            var creator = userDocs[0];
-            var possibleAnswers = answers.distinct('answer', {pollID: selectedPoll._id}, function(err, answers) {
-              if (err) return console.error(err);
-              var navbarLinks = [
-                {isActive: false, linkURL: '/', linkText: 'Home'},
-                {isActive: true, linkText: 'Vote'}
-              ];
-              var loginText = 'Not logged in.';
-              if (req.isAuthorized) {
-                navbarLinks.push({
-                  isActive: false,
-                  linkURL: '/dashboard',
-                  linkText: 'Dashboard'
-                });
-                navbarLinks.push({
-                  isActive: false,
-                  linkURL: '/dashboard/logout',
-                  linkText: 'Sign Out'
-                });
-                loginText = 'Hello, '+req.userObj.displayName+'.';
-              }
-              res.render('poll-view-vote', {
-                poll: selectedPoll,
-                author: creator,
-                answers: answers,
-                loginText: loginText,
-                navbarLinks: navbarLinks
-              });
-              db.close();
-              res.end();
-            });
-          }
+        var possibleAnswers = yield req.mongo.answers.distinct('answer', {
+          pollID: poll._id
+        });
+        var navbarLinks = [
+          {isActive: false, linkURL: '/', linkText: 'Home'},
+          {isActive: true, linkText: 'Vote'}
+        ];
+        var loginText = 'Not logged in.';
+        if (req.isAuthorized) {
+          navbarLinks.push({
+            isActive: false,
+            linkURL: '/dashboard',
+            linkText: 'Dashboard'
+          });
+          navbarLinks.push({
+            isActive: false,
+            linkURL: '/dashboard/logout',
+            linkText: 'Sign Out'
+          });
+          loginText = 'Hello, '+req.userObj.displayName+'.';
+        }
+        res.render('poll-view-vote', {
+          poll: poll,
+          author: pollAuthor[0],
+          answers: possibleAnswers,
+          loginText: loginText,
+          navbarLinks: navbarLinks
         });
       }
-    });
-  });
+    }
+  }).catch(utils.onError);
 });
 
 router.post('/:token', function(req, res) {
-  mongodb.connect(config.db.mongoURL, function(err, db) {
-    if (err) return console.error(err);
-    var answers = db.collection('answers');
-    var currentAnswers = answers.distinct('answer', {pollID: req.params.token}, function(err, docs) {
-      if (err) return console.error(err);
-      if (docs.length === 0) {
-        db.close();
-        response.end('ERROR: No such poll.');
-      } else {
-        var selectedAnswer;
-        if (req.body['new-answer'] === '')
-          selectedAnswer = req.body['selected-answer'];
-        else
-          selectedAnswer = req.body['new-answer'];
-        answers.insertOne({
-          pollID: req.params.token,
-          answer: selectedAnswer,
-          toCount: true
-        }, function(err, result) {
-          if (err) return console.error(err);
-          if (result.insertedCount !== 1)
-            return console.error('ERROR: Could not insert a nwe answer.');
-          res.redirect('/polls/'+req.params.token+'/results');
-          db.close();
-          res.end();
-        });
-      }
+
+  co(function* () {
+    var currentAnswers = yield req.mongo.answers.distinct('answer', {
+      pollID: req.params.token
     });
-  });
+    if (currentAnswers.length === 0) {
+      req.mongo.db.close();
+      res.end('ERROR: No such poll.');
+    } else {
+      var selectedAnswer;
+      if (req.body['new-answer'] === '')
+        selectedAnswer = req.body['selected-answer'];
+      else
+        selectedAnswer = req.body['new-answer'];
+      var insertResult = yield req.mongo.answers.insertOne({
+        pollID: req.params.token,
+        answer: selectedAnswer,
+        toCount: true
+      });
+      if (insertResult.insertedCount !== 1) {
+        yield Promise.reject(new Error('Could not insert a new answer.'));
+        req.mongo.db.close();
+        res.end('Unexpected error occured.')
+      } else {
+        res.redirect('/polls/'+req.params.token+'/results');
+        req.mongo.db.close();
+        res.end();
+      }
+    }
+  }).catch(utils.onError);
 });
 
 module.exports = router;

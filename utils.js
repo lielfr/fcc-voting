@@ -15,4 +15,8 @@ utils.randomAlphanums = function(length=6) {
     ret += utils.randomAlphanum();
   return ret;
 };
+
+utils.onError = function (err) {
+  console.error(err.stack);
+}
 module.exports = utils;

@@ -1,10 +1,7 @@
 var config = require('../config');
+var utils = require('../utils');
 var mongodb = require('mongodb').MongoClient;
 var co = require('co');
-
-function handleError(err) {
-  return console.error(err);
-}
 
 function authMiddleware(req, res, next) {
   if (!req.session || !req.session.uid) {
@@ -25,7 +22,7 @@ function authMiddleware(req, res, next) {
       }
     }).then(function() {
       next();
-    }).catch(handleError);
+    }).catch(utils.onError);
 
   }
 }
