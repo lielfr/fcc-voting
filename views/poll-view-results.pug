@@ -1,0 +1,11 @@
+extends ./poll-view-base.pug
+block headExtras
+  script(src='/js/poll_view.js')
+
+block jumbotronExtras
+  - var buttonURL = '/polls/' + poll._id
+  a(href=buttonURL, class='btn btn-success', role='button') Vote again
+
+block bodyExtras
+  div(class='container')
+    canvas(id='results-chart', class='img-responsive')
