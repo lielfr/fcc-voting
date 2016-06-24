@@ -31,7 +31,8 @@ function constructRow() {
   var textInput = $('<input>', {
     type: 'text',
     class: 'form-control',
-    placeholder: 'Not ready yet.'
+    placeholder: 'Not ready yet.',
+    required: true
   });
   var removeButton = $('<span>', {class: 'input-group-btn'}).append(
     $('<btn>', {
@@ -47,6 +48,8 @@ function constructRow() {
 $(document).ready(function() {
   $('.btn-adda').click(addAbove);
 
+  $('.btn-remove').click(removeRow);
+
   $('.btn-add').click(function() {
     var rows = $('.poll-answer');
     var insertionPlace;
@@ -58,6 +61,4 @@ $(document).ready(function() {
     constructRow().insertAfter(insertionPlace);
     onRearrange();
   });
-
-  $('.btn-remove').click(removeRow);
 });

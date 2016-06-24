@@ -78,16 +78,24 @@ router.get('/new', function(req, res) {
 });
 
 router.post('/new', function(req, res) {
-  if (!req.isAuthorized)
+  if (!req.isAuthorized) {
+    req.mongo.db.close();
     res.end('Not Logged in.');
-  else {
+  } else {
     co(function* () {
+      var paramsLength = Object.keys(req.body).map(function(val, i, arr) {
+        return val.length;
+      });
+      if (paramsLength.indexOf(0) > -1) {
+        req.mongo.db.close();
+        res.end('One or more fields was empty.');
+      }
       var newToken = utils.randomAlphanums();
       yield req.mongo.polls.insertOne({
         _id: newToken,
         author: req.userObj.uid,
         dateCreated: Date.now(),
-        title: req.body['poll_title']
+        title: req.body.poll_title
       });
       var questions = Object.keys(req.body).filter(function(elem, i, arr) {
         var splitted = elem.split('_');
