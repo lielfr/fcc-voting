@@ -16,6 +16,7 @@ mixin buttonBar(otherActionURL, otherActionText, otherActionClass)
         | Delete
 
 block body
+  include ./navbar.pug
   div(class='jumbotron bg-primary text-xs-center')
     h1 #{poll.title}
     p By #{author.displayName}
