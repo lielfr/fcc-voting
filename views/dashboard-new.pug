@@ -12,9 +12,11 @@ block bodyExtras
       - var inputPlaceholder = 'Answer '+ (q + 1)
       div(class='input-group poll-answer', id=containerID)
         span(class='input-group-btn')
-          button(class='btn btn-success btn-add', type='button') Add Before
+          button(class='btn btn-success btn-addb', type='button') Add above
         input(type='text' class='form-control', name=answerID, placeholder=inputPlaceholder)
         span(class='input-group-btn')
           button(class='btn btn-danger btn-remove', type='button') Remove
-    div(class='form-group flex-center')
-      button(class='btn btn-default btn-primary btn-submit', type='submit') Create Poll
+    div(class='btn-group btn-group-lg btn-group-fw', role='group', aria-label='Actions')
+        button(class='btn btn-default btn-success btn-adda', type='button')
+          | Add above
+        button(class='btn btn-default btn-primary btn-submit', type='submit') Create Poll

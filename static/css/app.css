@@ -17,11 +17,17 @@
   margin-top: 0.5em;
 }
 
-.btn-submit {
+.btn-group-fw {
   margin-top: 0.5em;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   width: 100%;
 }
-
+ .btn-group-fw .btn {
+   margin-left: 0 !important;
+   margin-right: 0 !important;
+   width: 50%;
+ }
 .list-group .btn {
   margin-top: -0.25em;
 }
