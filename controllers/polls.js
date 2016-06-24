@@ -45,12 +45,14 @@ router.get('/:token', function(req, res) {
           });
           loginText = 'Hello, '+req.userObj.displayName+'.';
         }
+        var showDelete = req.isAuthorized && poll.author === req.session.uid;
         res.render('poll-view-vote', {
           poll: poll,
           author: pollAuthor[0],
           answers: possibleAnswers,
           loginText: loginText,
-          navbarLinks: navbarLinks
+          navbarLinks: navbarLinks,
+          showDelete: showDelete
         });
       }
     }
@@ -126,12 +128,15 @@ router.get('/:token/results', function(req, res) {
             linkText: 'Sign Out'
           });
           loginText = 'Hello, '+req.userObj.displayName+'.';
+
         }
+        var showDelete = req.isAuthorized && poll.author === req.session.uid;
         res.render('poll-view-results', {
           poll: poll,
           author: pollAuthor[0],
           loginText: loginText,
-          navbarLinks: navbarLinks
+          navbarLinks: navbarLinks,
+          showDelete: showDelete
         });
       }
     }
@@ -172,6 +177,35 @@ router.get('/:token/raw', function(req, res) {
       };
       res.writeHead(200, {'Content-Type': 'text/json'});
       res.end(JSON.stringify(responseObj));
+    }
+  }).catch(utils.onError);
+});
+
+router.get('/:token/delete', function(req, res) {
+  co(function* () {
+    if (!req.isAuthorized) {
+      req.mongo.db.close();
+      res.end('Not logged in, sorry!');
+    }
+    var selectedPoll = yield req.mongo.polls.find({
+      _id: req.params.token,
+      author: req.session.uid
+    }).toArray();
+    if (selectedPoll.length === 0) {
+      req.mongo.db.close();
+      res.end('Could not delete the poll.');
+    } else if (selectedPoll.length !== 1) {
+      // Should never happen, but it's here just in case.
+      req.mongo.db.close();
+      res.end('Unknown error occured.');
+      yield Promise.reject(new Error('Found many polls with the same id!'));
+    } else {
+      var selectedPID = selectedPoll[0]._id;
+      yield req.mongo.polls.deleteOne({_id: selectedPID});
+      yield req.mongo.answers.deleteMany({pollID: selectedPID});
+      req.mongo.db.close();
+      res.redirect('/dashboard');
+      res.end();
     }
   }).catch(utils.onError);
 });
