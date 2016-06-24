@@ -89,27 +89,28 @@ router.post('/new', function(req, res) {
       if (paramsLength.indexOf(0) > -1) {
         req.mongo.db.close();
         res.end('One or more fields was empty.');
+      } else {
+        var newToken = utils.randomAlphanums();
+        yield req.mongo.polls.insertOne({
+          _id: newToken,
+          author: req.userObj.uid,
+          dateCreated: Date.now(),
+          title: req.body.poll_title
+        });
+        var questions = Object.keys(req.body).filter(function(elem, i, arr) {
+          var splitted = elem.split('_');
+          return (splitted.length === 3 && splitted[0] === 'poll' && splitted[1] === 'answer');
+        }).map(function(currVal, i, arr) {
+          return {
+            pollID: newToken,
+            answer: req.body[currVal],
+            toCount: false
+          };
+        });
+        yield req.mongo.answers.insertMany(questions);
+        req.mongo.db.close();
+        res.redirect('/dashboard');
       }
-      var newToken = utils.randomAlphanums();
-      yield req.mongo.polls.insertOne({
-        _id: newToken,
-        author: req.userObj.uid,
-        dateCreated: Date.now(),
-        title: req.body.poll_title
-      });
-      var questions = Object.keys(req.body).filter(function(elem, i, arr) {
-        var splitted = elem.split('_');
-        return (splitted.length === 3 && splitted[0] === 'poll' && splitted[1] === 'answer');
-      }).map(function(currVal, i, arr) {
-        return {
-          pollID: newToken,
-          answer: req.body[currVal],
-          toCount: false
-        };
-      });
-      yield req.mongo.answers.insertMany(questions);
-      req.mongo.db.close();
-      res.redirect('/dashboard');
     }).catch(utils.onError);
   }
 });
