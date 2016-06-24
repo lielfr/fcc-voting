@@ -4,12 +4,7 @@ block headExtras
   script(src='/js/poll_vote.js')
 
 block jumbotronExtras
-  - var baseURL = '/polls/' + poll._id
-  - var resultsURL = baseURL + '/results'
-  - var deleteURL = baseURL + '/delete'
-  a(href=resultsURL, class='btn btn-success', role='button') View results
-  if showDelete
-    a(href=deleteURL, role='button', class='btn btn-default btn-danger') Delete
+  + buttonBar('/results', 'View results', 'btn-success')
 
 block bodyExtras
   form(id='poll-vote', method='post')
