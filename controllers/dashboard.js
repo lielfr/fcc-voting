@@ -12,15 +12,19 @@ router.get('/', function(req, res) {
     } else {
       req.session.uid = req.user.id;
       co(function* () {
-        var result = yield req.mongo.profiles.insertOne({
-          uid: req.user.id,
-          displayName: req.user.displayName,
-          image: req.user.profile_image_url
-        });
+        var userRecords = yield req.mongo.profiles.find({
+          uid: req.user.id
+        }).toArray();
+        if (userRecords.length === 0) {
+          var result = yield req.mongo.profiles.insertOne({
+            uid: req.user.id,
+            displayName: req.user.displayName,
+            image: req.user.profile_image_url
+          });
 
-        if (result.insertedCount !== 1)
-          yield Promise.reject(new Error('Could not insert the profile into mongo.'));
-
+          if (result.insertedCount !== 1)
+            yield Promise.reject(new Error('Could not insert the profile into mongo.'));
+        }
         req.mongo.db.close();
         res.redirect('/dashboard');
       }).catch(utils.onError);
@@ -51,7 +55,6 @@ router.get('/logout', function(req, res) {
   else {
 
     co(function* () {
-      yield req.mongo.profiles.deleteOne({uid: req.session.uid});
       req.mongo.db.close();
       req.session.destroy();
       console.log('logging out.');

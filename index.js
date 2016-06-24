@@ -1,4 +1,6 @@
 var config = require('./config');
+var utils = require('./utils');
+var co = require('co');
 var express = require('express');
 var body_parser = require('body-parser');
 var express_session = require('express-session');
@@ -46,11 +48,16 @@ app.use('/dashboard', controller_dashboard);
 app.use('/polls', controller_polls);
 
 app.get('/', function(req, res) {
-  res.render('index', {
-    loginText: req.welcomeString,
-    navbarLinks: [],
-    isAuthorized: req.isAuthorized
-  });
+  co(function* () {
+    var polls = yield req.mongo.polls.find({}).toArray();
+    req.mongo.db.close();
+    res.render('index', {
+      loginText: req.welcomeString,
+      navbarLinks: [],
+      isAuthorized: req.isAuthorized,
+      polls: polls
+    });
+  }).catch(utils.onError);
 });
 app.get('/auth', passport.authenticate('twitter'));
 app.get('/auth/cb', passport.authenticate('twitter', {failureRedirect: '/'}),

@@ -1,0 +1,6 @@
+ul(class='list-group' id='polls-list')
+  each obj in polls
+    - var voteLink = '/polls/' + obj._id
+    li(class='list-group-item')
+        a(class='invisible-link text-xs-center center-block', href=voteLink)
+          | #{obj.title}

@@ -4,7 +4,6 @@ block head
 block body
   div(class='jumbotron bg-primary text-xs-center')
     h1 Polls Made Easy
-  div(class='container flex-center')
     if isAuthorized
       a(class='btn btn-success', href='/dashboard', role='button')
         | Go to your dashboard
@@ -12,3 +11,4 @@ block body
       a(class='btn btn-info', href='/auth', role='button')
         i(class='fa fa-twitter', aria-hidden='true')
         | &nbsp;Sign In using Twitter
+  include ./polls-list.pug

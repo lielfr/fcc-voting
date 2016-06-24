@@ -8,11 +8,4 @@ block jumbotronExtras
       | Sign Out
 
 block bodyExtras
-  ul(class='list-group' id='polls-list')
-    each obj in polls
-      - var delID = 'del-' + obj._id
-      - var editID = 'edit-' + obj._id
-      - var voteLink = '/polls/' + obj._id
-      li(class='list-group-item')
-          a(class='invisible-link text-xs-center center-block', href=voteLink)
-            | #{obj.title}
+  include ./polls-list.pug
