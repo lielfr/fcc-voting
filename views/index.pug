@@ -1,8 +1,18 @@
 extends ./base.pug
+
+mixin marketing(imageURL, title, content)
+    div(class='jumbotron text-xs-center marketing-text zero-gaps')
+      div(class='semi')
+        h2 #{title}
+        p
+          | #{content}
+      div(class='flex-center')
+        img(class='img-fluid img-rounded', src=imageURL, aria-hidden='true')
+
 block head
   title Polls Made Easy
 block body
-  div(class='jumbotron bg-primary text-xs-center')
+  div(class='jumbotron zero-gaps bg-primary text-xs-center')
     h1 Polls Made Easy
     if isAuthorized
       a(class='btn btn-success', href='/dashboard', role='button')
@@ -11,4 +21,10 @@ block body
       a(class='btn btn-info', href='/auth', role='button')
         i(class='fa fa-twitter', aria-hidden='true')
         | &nbsp;Sign In using Twitter
+  if !isAuthorized
+    + marketing('/images/sharing.jpg', 'Sharing is caring', 'Get other people involved in your decisions and benefit from the feedback you receive.')
+    + marketing('/images/blogging.jpg', 'Works everywhere', 'You can vote and create your votes on every device you have, as long as it is connected to the internet and has a web browser.')
+    + marketing('/images/decisions.jpg', 'For the best possible decisions', 'See immediate results in a graph. Easy to see, easy to understand.')
+
+
   include ./polls-list.pug
