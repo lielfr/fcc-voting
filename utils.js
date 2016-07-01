@@ -19,4 +19,11 @@ utils.randomAlphanums = function(length=6) {
 utils.onError = function (err) {
   console.error(err.stack);
 }
+
+utils.gotoError = function(req, res, errText) {
+  req.session.errText = errText;
+  res.redirect('/error');
+  req.mongo.db.close();
+  res.end();
+}
 module.exports = utils;

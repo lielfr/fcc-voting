@@ -8,7 +8,7 @@ router.get('/', function(req, res) {
   if (!req.isAuthorized) {
     if (!req.user) {
       // TODO: Replace this with an error page.
-      res.end('Not logged in, sorry!');
+      utils.gotoError(req, res, 'Not logged in, sorry!');
     } else {
       req.session.uid = req.user.id;
       co(function* () {
@@ -51,13 +51,12 @@ router.get('/', function(req, res) {
 
 router.get('/logout', function(req, res) {
   if (!req.isAuthorized)
-    res.end('Not logged in.');
+    utils.gotoError(req, res, 'Not logged in.');
   else {
 
     co(function* () {
       req.mongo.db.close();
       req.session.destroy();
-      console.log('logging out.');
       res.redirect('/');
       res.end();
     }).catch(utils.onError);
@@ -66,7 +65,7 @@ router.get('/logout', function(req, res) {
 
 router.get('/new', function(req, res) {
   if (!req.isAuthorized)
-    res.end('Not logged in.');
+    utils.gotoError(req, res, 'Not logged in.');
   else {
     res.render('dashboard-new', {
       loginText: req.welcomeString,
@@ -82,17 +81,15 @@ router.get('/new', function(req, res) {
 
 router.post('/new', function(req, res) {
   if (!req.isAuthorized) {
-    req.mongo.db.close();
-    res.end('Not Logged in.');
+    utils.gotoError(req, res, 'Not Logged in.');
   } else {
     co(function* () {
       var paramsLength = Object.keys(req.body).map(function(val, i, arr) {
         return val.length;
       });
-      if (paramsLength.indexOf(0) > -1) {
-        req.mongo.db.close();
-        res.end('One or more fields was empty.');
-      } else {
+      if (paramsLength.indexOf(0) > -1)
+        utils.gotoError(req, res, 'One or more fields was empty.');
+      else {
         var newToken = utils.randomAlphanums();
         yield req.mongo.polls.insertOne({
           _id: newToken,

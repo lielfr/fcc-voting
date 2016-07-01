@@ -64,6 +64,17 @@ app.get('/auth/cb', passport.authenticate('twitter', {failureRedirect: '/'}),
 function(req, res) {
   res.redirect('/dashboard');
 });
+app.get('/error', function(req, res) {
+  var prevError;
+  if (req.session.hasOwnProperty('errText')) {
+    prevError = req.session.errText;
+    delete req.session.errText;
+  } else
+    prevError = 'No error.';
+  res.render('error', {errorText: prevError});
+
+  res.end();
+});
 
 
 app.listen(process.env.PORT | 8080);

@@ -11,8 +11,8 @@ router.get('/:token', function(req, res) {
       _id: req.params.token
     }).toArray();
     if (matchedPolls.length !== 1) {
-      req.mongo.db.close();
-      res.end((matchedPolls.length === 0?'No poll was ':'Too many polls were ')
+      utils.gotoError(req, res,
+        (matchedPolls.length === 0?'No poll was ':'Too many polls were ')
                + 'found.');
     } else {
       var poll = matchedPolls[0];
@@ -20,8 +20,7 @@ router.get('/:token', function(req, res) {
         uid: poll.author
       }).toArray();
       if (pollAuthor.length !== 1) {
-        req.mongo.db.close();
-        res.end('Unexpected error occured.');
+        utils.gotoError(req, res, 'Unexpected error occured.');
         yield Promise.reject(new Error('Could not find user: '+poll.author));
       } else {
         var possibleAnswers = yield req.mongo.answers.distinct('answer', {
@@ -65,10 +64,9 @@ router.post('/:token', function(req, res) {
     var currentAnswers = yield req.mongo.answers.distinct('answer', {
       pollID: req.params.token
     });
-    if (currentAnswers.length === 0) {
-      req.mongo.db.close();
-      res.end('ERROR: No such poll.');
-    } else {
+    if (currentAnswers.length === 0)
+      utils.gotoError(req, res, 'No such poll.');
+    else {
       var selectedAnswer;
       if (req.body['new-answer'] === '')
         selectedAnswer = req.body['selected-answer'];
@@ -81,8 +79,7 @@ router.post('/:token', function(req, res) {
       });
       if (insertResult.insertedCount !== 1) {
         yield Promise.reject(new Error('Could not insert a new answer.'));
-        req.mongo.db.close();
-        res.end('Unexpected error occured.')
+        utils.gotoError(req, res, 'Unexpected error occured.');
       } else {
         res.redirect('/polls/'+req.params.token+'/results');
         req.mongo.db.close();
@@ -98,8 +95,8 @@ router.get('/:token/results', function(req, res) {
       _id: req.params.token
     }).toArray();
     if (matchedPolls.length !== 1) {
-      req.mongo.db.close();
-      res.end((matchedPolls.length === 0?'No poll was ':'Too many polls were ')
+      utils.gotoError(req, res,
+        (matchedPolls.length === 0?'No poll was ':'Too many polls were ')
                + 'found.');
     } else {
       var poll = matchedPolls[0];
@@ -107,8 +104,7 @@ router.get('/:token/results', function(req, res) {
         uid: poll.author
       }).toArray();
       if (pollAuthor.length !== 1) {
-        req.mongo.db.close();
-        res.end('Unexpected error occured.');
+        utils.gotoError(req, res, 'Unexpected error occured.');
         yield Promise.reject(new Error('Could not find user: '+poll.author));
       } else {
         var navbarLinks = [
@@ -149,7 +145,9 @@ router.get('/:token/raw', function(req, res) {
       pollID: req.params.token
     });
     if (currentAnswers.length === 0) {
+      // This is supposed to be a clean representation, so I decided to leave it like this instead of using thecustom error page.
       req.mongo.db.close();
+      res.writeHead(404);
       res.end('ERROR: No such poll.');
     } else {
       var resultsData = [];
@@ -183,21 +181,17 @@ router.get('/:token/raw', function(req, res) {
 
 router.get('/:token/delete', function(req, res) {
   co(function* () {
-    if (!req.isAuthorized) {
-      req.mongo.db.close();
-      res.end('Not logged in, sorry!');
-    }
+    if (!req.isAuthorized)
+      return utils.gotoError(req, res, 'Not logged in, sorry!');
     var selectedPoll = yield req.mongo.polls.find({
       _id: req.params.token,
       author: req.session.uid
     }).toArray();
-    if (selectedPoll.length === 0) {
-      req.mongo.db.close();
-      res.end('Could not delete the poll.');
-    } else if (selectedPoll.length !== 1) {
+    if (selectedPoll.length === 0)
+      utils.gotoError(req, res, 'Could not delete the poll.');
+    else if (selectedPoll.length !== 1) {
       // Should never happen, but it's here just in case.
-      req.mongo.db.close();
-      res.end('Unknown error occured.');
+      utils.gotoError(req, res, 'Unknown error occured.');
       yield Promise.reject(new Error('Found many polls with the same id!'));
     } else {
       var selectedPID = selectedPoll[0]._id;

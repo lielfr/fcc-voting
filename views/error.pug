@@ -1,0 +1,16 @@
+extends ./base.pug
+
+block head
+  title Polls Made Easy - Error
+
+block body
+  div(class='jumbotron bg-danger text-xs-center')
+    h1 Oops!
+    p
+      | It seems like something went wrong.
+    a(href='/', class='btn btn-success', role='button') Go to the main page.
+  div(class='container-fluid text-xs-center')
+    h3(class='text-xs-center') Error details
+    div(class='card card-block')
+      p(class='card-text')
+        | #{errorText}

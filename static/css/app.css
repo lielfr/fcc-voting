@@ -86,3 +86,7 @@ h3 {
 .btn-group-fw .btn-fw {
   width: 100%;
 }
+
+.card {
+  background-color: rgba(100, 100, 100, 0.3);
+}
