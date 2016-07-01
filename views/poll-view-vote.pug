@@ -8,6 +8,7 @@ block jumbotronExtras
 
 block bodyExtras
   form(id='poll-vote', method='post')
+    input(type='hidden', name='_csrf', value=csrfToken)
     div(class='list-group', id='poll-answers-container')
       each answer in answers
         button(type='button', class='list-group-item') #{answer}

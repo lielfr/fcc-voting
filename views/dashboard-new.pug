@@ -4,6 +4,7 @@ block headExtras
 block bodyExtras
   h3(class='text-center') Create A Poll
   form(id='new-poll', method='post')
+    input(type='hidden', name='_csrf', value=csrfToken)
     div(class='form-group')
       input(type='text', class='form-control poll-title', name='poll_title', id='poll_title', placeholder='Poll Title', required)
     each q in [0, 1, 2]

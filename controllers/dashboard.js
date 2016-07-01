@@ -1,7 +1,9 @@
 var express = require('express');
 var co = require('co');
+var csrf = require('csurf');
 var utils = require('../utils');
 
+var csrfProtection = csrf();
 var router = express.Router();
 
 router.get('/', function(req, res) {
@@ -63,11 +65,12 @@ router.get('/logout', function(req, res) {
   }
 });
 
-router.get('/new', function(req, res) {
+router.get('/new', csrfProtection, function(req, res) {
   if (!req.isAuthorized)
     utils.gotoError(req, res, 'Not logged in.');
   else {
     res.render('dashboard-new', {
+      csrfToken: req.csrfToken(),
       loginText: req.welcomeString,
       navbarLinks: [
         {isActive: false, linkURL: '/', linkText: 'Home'},
@@ -79,7 +82,7 @@ router.get('/new', function(req, res) {
   }
 });
 
-router.post('/new', function(req, res) {
+router.post('/new', csrfProtection, function(req, res) {
   if (!req.isAuthorized) {
     utils.gotoError(req, res, 'Not Logged in.');
   } else {
