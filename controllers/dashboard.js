@@ -8,10 +8,9 @@ var router = express.Router();
 
 router.get('/', function(req, res) {
   if (!req.isAuthorized) {
-    if (!req.user) {
-      // TODO: Replace this with an error page.
+    if (!req.user)
       utils.gotoError(req, res, 'Not logged in, sorry!');
-    } else {
+    else {
       req.session.uid = req.user.id;
       co(function* () {
         var userRecords = yield req.mongo.profiles.find({

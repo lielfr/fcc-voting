@@ -8,12 +8,14 @@ mixin buttonBar(otherActionURL, otherActionText, otherActionClass)
   - var otherURL = baseURL + otherActionURL
   - var deleteURL = baseURL + '/delete'
   - var otherClasses = 'btn ' + otherActionClass
-  div(class='btn-group btn-group-lg', role='group', aria-label='Poll navigation')
-    a(href=otherURL, class=otherClasses, role='button')
-      | #{otherActionText}
-    if showDelete
-      a(href=deleteURL, role='button', class='btn btn-default btn-danger')
-        | Delete
+  form(action=deleteURL, method='post')
+    div(class='btn-group btn-group-lg', role='group', aria-label='Poll navigation')
+      a(href=otherURL, class=otherClasses, role='button')
+        | #{otherActionText}
+      if showDelete
+        input(type='hidden', name='_csrfe', value=csrfToken)
+        button(type='submit', class='btn btn-default btn-submit btn-danger')
+          | Delete
 
 block body
   include ./navbar.pug

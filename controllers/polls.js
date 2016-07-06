@@ -46,13 +46,6 @@ router.get('/:token', csrfProtection, function(req, res) {
           loginText = 'Hello, '+req.userObj.displayName+'.';
         }
         var showDelete = req.isAuthorized && poll.author === req.session.uid;
-        if (showDelete) {
-          // Allow the user to delete within two minutes.
-          req.session.deleteAuthorized =  {
-            id: poll._id,
-            timeout: new Date().getTime() + 60000 * 2,
-          };
-        }
         res.render('poll-view-vote', {
           poll: poll,
           author: pollAuthor[0],
@@ -98,7 +91,7 @@ router.post('/:token', csrfProtection, function(req, res) {
   }).catch(utils.onError);
 });
 
-router.get('/:token/results', function(req, res) {
+router.get('/:token/results', csrfProtection, function(req, res) {
   co(function* () {
     var matchedPolls = yield req.mongo.polls.find({
       _id: req.params.token
@@ -141,7 +134,8 @@ router.get('/:token/results', function(req, res) {
           author: pollAuthor[0],
           loginText: loginText,
           navbarLinks: navbarLinks,
-          showDelete: showDelete
+          showDelete: showDelete,
+          csrfToken: req.csrfToken()
         });
       }
     }
@@ -188,7 +182,7 @@ router.get('/:token/raw', function(req, res) {
   }).catch(utils.onError);
 });
 
-router.get('/:token/delete', function(req, res) {
+router.post('/:token/delete', csrfProtection, function(req, res) {
   co(function* () {
     if (!req.isAuthorized)
       return utils.gotoError(req, res, 'Not logged in, sorry!');
@@ -196,13 +190,7 @@ router.get('/:token/delete', function(req, res) {
       _id: req.params.token,
       author: req.session.uid
     }).toArray();
-    var cannotDelete = (
-      selectedPoll.length === 0 ||
-      !req.session.hasOwnProperty('deleteAuthorized') ||
-      req.deleteAuthorized.id !== req.params.token ||
-      req.deleteAuthorized.timeout <= new Date().getTime()
-    );
-    if (cannotDelete)
+    if (selectedPoll.length === 0)
       utils.gotoError(req, res, 'Could not delete the poll.');
     else if (selectedPoll.length !== 1) {
       // Should never happen, but it's here just in case.

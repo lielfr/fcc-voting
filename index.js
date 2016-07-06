@@ -75,9 +75,13 @@ app.get('/error', function(req, res) {
 
   res.end();
 });
+app.use(function(err, req, res, next) {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err);
+  utils.gotoError(req, res,
+    'Disallowed behavior was detected, therefore nothing has changed.');
+});
 app.use(function(req, res, next) {
   utils.gotoError(req, res, 'Page does not exist.');
 });
-
 
 app.listen(process.env.PORT | 8080);
