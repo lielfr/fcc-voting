@@ -85,4 +85,4 @@ app.use(function(req, res, next) {
   utils.gotoError(req, res, 'Page does not exist.');
 });
 
-app.listen(process.env.PORT | 8080);
+app.listen(process.env.PORT || 8080);

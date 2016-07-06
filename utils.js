@@ -9,7 +9,7 @@ utils.randomAlphanum = function() {
   return utils.randomChoice(alphanums);
 };
 
-utils.randomAlphanums = function(length=6) {
+utils.randomAlphanums = function() {
   var ret = '';
   for (var i = 0; i < length; i++)
     ret += utils.randomAlphanum();
