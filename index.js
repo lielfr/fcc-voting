@@ -6,6 +6,7 @@ var body_parser = require('body-parser');
 var express_session = require('express-session');
 var express_session_mongo = require('connect-mongo')(express_session);
 var pug = require('pug');
+var helmet = require('helmet');
 var passport = require('passport');
 var passport_twitter = require('passport-twitter').Strategy;
 var mongodb = require('mongodb').MongoClient;
@@ -29,9 +30,9 @@ passport.deserializeUser(function(obj, cb) {
   cb(null, obj);
 });
 var app = express();
-app.set('x-powered-by', false);
 app.set('view engine', 'pug');
 app.set('views', './views');
+app.use(helmet());
 app.use(express_session({
   secret: config.session.secret,
   resave: false,
