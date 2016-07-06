@@ -13,7 +13,7 @@ mixin buttonBar(otherActionURL, otherActionText, otherActionClass)
       a(href=otherURL, class=otherClasses, role='button')
         | #{otherActionText}
       if showDelete
-        input(type='hidden', name='_csrfe', value=csrfToken)
+        input(type='hidden', name='_csrf', value=csrfToken)
         button(type='submit', class='btn btn-default btn-submit btn-danger')
           | Delete
 
